@@ -6,9 +6,7 @@
   <title>تحكم بالسيرفو (MQTT)</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg1:#0f172a; --bg2:#0b3b53; --accent1:#ff7aa2; --accent2:#6be7ff;
-    }
+    :root{--bg1:#0f172a;--bg2:#0b3b53;--accent1:#ff7aa2;--accent2:#6be7ff;}
     body{
       height:100vh;margin:0;font-family:'Tajawal',sans-serif;direction:rtl;
       background:linear-gradient(120deg,var(--bg1),var(--bg2));
@@ -19,7 +17,7 @@
       background:linear-gradient(135deg,var(--accent1),var(--accent2));
       color:#02151a;font-size:20px;font-weight:bold;
       box-shadow:0 0 20px rgba(255,255,255,0.1);
-      transition:transform .2s ease, opacity .2s ease;
+      transition:transform .2s ease,opacity .2s ease;
     }
     .pulse-btn:active{transform:scale(0.95);}
     .hint{margin-top:20px;opacity:0.8;}
@@ -32,51 +30,51 @@
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script>
     const btnSweep = document.getElementById('btnSweep');
-    const serverUrl = 'wss://35fcc63a6dd44641b1bdbf3e040b1624.s1.eu.hivemq.cloud:8884/mqtt';
-    const username = 'hivemq.webclient.1760242341884';
-    const password = 'bTouy;LM38A6<aXQm@>1';
-    const topic = '/commands/device_servo';
 
-    let client = null;
-    let canPress = true;
+    // بيانات حسابك الجديد
+    const serverUrl = 'wss://1163ef3a8e254ba9b3d6ffb7a7d90bf0.s1.eu.hivemq.cloud:8884/mqtt';
+    const username  = 'hivemq.webclient.1762781150516';
+    const password  = 'JG*c>5?6RpHIAdm$98kx';
+    const topic     = '/commands/device_servo';
 
-    function connectMQTT() {
-      if (client) try { client.end(); } catch(e){}
-      client = mqtt.connect(serverUrl, { username, password, reconnectPeriod: 2000 });
+    let client=null, canPress=true;
+
+    function connectMQTT(){
+      if(client) try{client.end();}catch(e){}
+      client = mqtt.connect(serverUrl,{username,password,reconnectPeriod:2000});
     }
 
-    function disableButtonTemporarily() {
-      canPress = false;
-      btnSweep.style.opacity = '0.5';
-      btnSweep.style.pointerEvents = 'none';
-      let count = 10;
-      const originalText = btnSweep.textContent;
-      btnSweep.textContent = `انتظر ${count} ثواني...`;
-      const timer = setInterval(() => {
+    function disableButtonTemporarily(){
+      canPress=false;
+      btnSweep.style.opacity='0.5';
+      btnSweep.style.pointerEvents='none';
+      let count=10;
+      const txt=btnSweep.textContent;
+      const timer=setInterval(()=>{
         count--;
-        btnSweep.textContent = count > 0 ? `انتظر ${count} ثواني...` : originalText;
-        if (count <= 0) {
+        btnSweep.textContent = count>0 ? `انتظر ${count} ثواني...` : txt;
+        if(count<=0){
           clearInterval(timer);
-          btnSweep.style.opacity = '1';
-          btnSweep.style.pointerEvents = 'auto';
-          canPress = true;
+          btnSweep.style.opacity='1';
+          btnSweep.style.pointerEvents='auto';
+          canPress=true;
         }
-      }, 1000);
+      },1000);
     }
 
-    btnSweep.addEventListener('click', () => {
-      if (!canPress) return;
+    btnSweep.addEventListener('click',()=>{
+      if(!canPress) return;
       disableButtonTemporarily();
 
-      const payload = 'sweep';
-      if (!client || client.disconnected) connectMQTT();
+      const payload='sweep';
+      if(!client||client.disconnected) connectMQTT();
 
-      client.publish(topic, payload, { qos: 1, retain: false }); // ← احتفظ بآخر أمر فقط
-      btnSweep.animate([{ transform: 'scale(0.95)' }, { transform: 'scale(1)' }], { duration: 160 });
+      // إرسال أمر واحد مؤقت (بدون retain)
+      client.publish(topic,payload,{qos:1,retain:false});
+      btnSweep.animate([{transform:'scale(0.95)'},{transform:'scale(1)'}],{duration:160});
     });
 
     connectMQTT();
   </script>
 </body>
 </html>
-
