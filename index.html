@@ -7,208 +7,75 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg1:#0f172a;
-      --bg2:#0b3b53;
-      --accent1:#ff7aa2;
-      --accent2:#6be7ff;
-      --glass: rgba(255,255,255,0.06);
+      --bg1:#0f172a; --bg2:#0b3b53; --accent1:#ff7aa2; --accent2:#6be7ff;
     }
-    html,body{height:100%;margin:0;font-family:'Tajawal',system-ui,Segoe UI,Arial;direction:rtl;}
     body{
-      background: linear-gradient(120deg,var(--bg1), var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
+      height:100vh;margin:0;font-family:'Tajawal',sans-serif;direction:rtl;
+      background:linear-gradient(120deg,var(--bg1),var(--bg2));
+      display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;
     }
-    /* animated soft radial overlay */
-    .canvas{
-      position:fixed;inset:0;pointer-events:none;
-      background:
-        radial-gradient(600px 400px at 10% 20%, rgba(107,231,255,0.06), transparent 10%),
-        radial-gradient(500px 300px at 90% 80%, rgba(255,122,162,0.06), transparent 12%);
-      mix-blend-mode: screen;
-      animation: floatBG 12s linear infinite;
-    }
-    @keyframes floatBG {
-      0%{transform:translateY(0px) scale(1)}
-      50%{transform:translateY(-12px) scale(1.02)}
-      100%{transform:translateY(0px) scale(1)}
-    }
-
-    .container{
-      z-index:2;
-      text-align:center;
-      width:100%;
-      max-width:420px;
-      padding:40px;
-      box-sizing:border-box;
-    }
-
-    /* big circular button */
     .pulse-btn{
-      --size:200px;
-      width:var(--size);
-      height:var(--size);
-      margin:0 auto;
-      border-radius:50%;
-      border:none;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), transparent 15%),
-                  linear-gradient(135deg,var(--accent1),var(--accent2));
-      box-shadow:
-        0 10px 30px rgba(2,6,23,0.6),
-        0 6px 18px rgba(107,231,255,0.08),
-        0 0 40px rgba(255,122,162,0.18);
-      color:#06202a;
-      font-size:20px;
-      font-weight:700;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      position:relative;
-      transition: transform .18s ease, box-shadow .18s ease;
-      outline:none;
-      -webkit-tap-highlight-color: transparent;
+      width:180px;height:180px;border-radius:50%;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      color:#02151a;font-size:20px;font-weight:bold;
+      box-shadow:0 0 20px rgba(255,255,255,0.1);
+      transition:transform .2s ease, opacity .2s ease;
     }
-
-    .pulse-btn:active{ transform: scale(.96); }
-    .pulse-btn:hover{ transform: translateY(-6px); }
-
-    /* inner icon */
-    .btn-inner{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:8px;
-      color:#02151a;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.12);
-    }
-    .btn-icon{
-      width:56px;height:56px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;
-      background: rgba(255,255,255,0.12);
-      box-shadow: inset 0 -4px 10px rgba(0,0,0,0.15);
-    }
-
-    .btn-label{ font-size:18px; }
-
-    /* subtle pulse ring */
-    .pulse-ring{
-      position:absolute;inset:0;border-radius:50%;
-      box-shadow:0 0 0 0 rgba(255,122,162,0.20);
-      animation: ring 2.8s infinite;
-      pointer-events:none;
-    }
-    @keyframes ring {
-      0% { box-shadow:0 0 0 0 rgba(255,122,162,0.20); transform:scale(1); opacity:1; }
-      70%{ box-shadow:0 0 0 26px rgba(255,122,162,0.00); transform:scale(1.06); opacity:0; }
-      100%{ box-shadow:0 0 0 26px rgba(255,122,162,0); transform:scale(1.06); opacity:0; }
-    }
-
-    /* small footer helper text (optional, minimal) */
-    .hint{
-      margin-top:20px;color:rgba(255,255,255,0.75);font-size:13px;
-      opacity:0.9;
-    }
-
-    /* responsive */
-    @media (max-width:420px){
-      .pulse-btn{ --size:150px; }
-      .btn-icon{ width:48px;height:48px; }
-      .btn-label{ font-size:16px; }
-    }
+    .pulse-btn:active{transform:scale(0.95);}
+    .hint{margin-top:20px;opacity:0.8;}
   </style>
 </head>
 <body>
-  <div class="canvas" aria-hidden="true"></div>
-
-  <div class="container">
-    <button id="btnSweep" class="pulse-btn" title="شغل لفة السيرفو">
-      <span class="pulse-ring" aria-hidden="true"></span>
-      <span class="btn-inner">
-        <span class="btn-icon" aria-hidden="true">
-          <!-- simple servo/wave svg -->
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M3 12c2-4 6-8 10-8s8 4 10 8" stroke="#02151a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="12" r="3.2" fill="#02151a"/>
-          </svg>
-        </span>
-        <span class="btn-label"> شغل/طفي المبة </span>
-      </span>
-    </button>
-
-    <div class="hint" aria-hidden="true">اضغط عند الحاجة</div>
-  </div>
+  <button id="btnSweep" class="pulse-btn">تشغيل السيرفو</button>
+  <div class="hint">لا يمكن الضغط أكثر من مرة كل 10 ثوانٍ</div>
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-<script>
-  const btnSweep = document.getElementById('btnSweep');
+  <script>
+    const btnSweep = document.getElementById('btnSweep');
+    const serverUrl = 'wss://35fcc63a6dd44641b1bdbf3e040b1624.s1.eu.hivemq.cloud:8884/mqtt';
+    const username = 'hivemq.webclient.1760242341884';
+    const password = 'bTouy;LM38A6<aXQm@>1';
+    const topic = '/commands/device_servo';
 
-  const serverUrl = 'wss://35fcc63a6dd44641b1bdbf3e040b1624.s1.eu.hivemq.cloud:8884/mqtt';
-  const username = 'hivemq.webclient.1760242341884';
-  const password = 'bTouy;LM38A6<aXQm@>1';
-  const topic = '/commands/device_servo';
+    let client = null;
+    let canPress = true;
 
-  let client = null;
-  let pendingPublish = null;
-  let canPress = true; // ← للتحكم بعدد النقرات
-
-  function connectMQTT(afterConnectPublish) {
-    if (client) {
-      try { client.end(); } catch (e) {}
-      client = null;
+    function connectMQTT() {
+      if (client) try { client.end(); } catch(e){}
+      client = mqtt.connect(serverUrl, { username, password, reconnectPeriod: 2000 });
     }
-    const opts = {
-      username: username,
-      password: password,
-      reconnectPeriod: 2000
-    };
-    client = mqtt.connect(serverUrl, opts);
 
-    client.on('connect', function () {
-      if (afterConnectPublish) {
-        client.publish(topic, afterConnectPublish, { qos: 0 }, function () {
-          pendingPublish = null;
-        });
-      } else if (pendingPublish) {
-        client.publish(topic, pendingPublish, { qos: 0 }, function () {
-          pendingPublish = null;
-        });
-      }
+    function disableButtonTemporarily() {
+      canPress = false;
+      btnSweep.style.opacity = '0.5';
+      btnSweep.style.pointerEvents = 'none';
+      let count = 10;
+      const originalText = btnSweep.textContent;
+      btnSweep.textContent = `انتظر ${count} ثواني...`;
+      const timer = setInterval(() => {
+        count--;
+        btnSweep.textContent = count > 0 ? `انتظر ${count} ثواني...` : originalText;
+        if (count <= 0) {
+          clearInterval(timer);
+          btnSweep.style.opacity = '1';
+          btnSweep.style.pointerEvents = 'auto';
+          canPress = true;
+        }
+      }, 1000);
+    }
+
+    btnSweep.addEventListener('click', () => {
+      if (!canPress) return;
+      disableButtonTemporarily();
+
+      const payload = 'sweep';
+      if (!client || client.disconnected) connectMQTT();
+
+      client.publish(topic, payload, { qos: 1, retain: true }); // ← احتفظ بآخر أمر فقط
+      btnSweep.animate([{ transform: 'scale(0.95)' }, { transform: 'scale(1)' }], { duration: 160 });
     });
-  }
 
-  // منع أكثر من ضغطة خلال 10 ثوانٍ
-  function disableButtonTemporarily() {
-    canPress = false;
-    btnSweep.style.opacity = '0.5';
-    btnSweep.style.pointerEvents = 'none';
-    setTimeout(() => {
-      btnSweep.style.opacity = '1';
-      btnSweep.style.pointerEvents = 'auto';
-      canPress = true;
-    }, 10000); // 10 ثوانٍ
-  }
-
-  btnSweep.addEventListener('click', function () {
-    if (!canPress) return; // تجاهل الضغطات السريعة
-    disableButtonTemporarily();
-
-    const payload = 'sweep';
-    if (!client || client.disconnected) {
-      pendingPublish = payload;
-      connectMQTT(payload);
-      btnSweep.animate([{ transform: 'scale(0.98)' }, { transform: 'scale(1)' }], { duration: 180 });
-      return;
-    }
-    client.publish(topic, payload, { qos: 0 }, function () { /* silent */ });
-    btnSweep.animate([{ transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 140 });
-  });
-
-  connectMQTT(); // اتصال مبكر
-</script>
+    connectMQTT();
+  </script>
 </body>
 </html>
->
-
