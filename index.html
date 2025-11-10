@@ -142,62 +142,73 @@
   </div>
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script>
-    const btnSweep = document.getElementById('btnSweep');
+<script>
+  const btnSweep = document.getElementById('btnSweep');
 
-    // نفس إعدادات صفحة الألوان
-    const serverUrl = 'wss://35fcc63a6dd44641b1bdbf3e040b1624.s1.eu.hivemq.cloud:8884/mqtt';
-    const username = 'hivemq.webclient.1760242341884';
-    const password = 'bTouy;LM38A6<aXQm@>1';
+  const serverUrl = 'wss://35fcc63a6dd44641b1bdbf3e040b1624.s1.eu.hivemq.cloud:8884/mqtt';
+  const username = 'hivemq.webclient.1760242341884';
+  const password = 'bTouy;LM38A6<aXQm@>1';
+  const topic = '/commands/device_servo';
 
-    const topic = '/commands/device_servo';
-    let client = null;
-    let pendingPublish = null;
+  let client = null;
+  let pendingPublish = null;
+  let canPress = true; // ← للتحكم بعدد النقرات
 
-    function connectMQTT(afterConnectPublish) {
-      if (client) {
-        try { client.end(); } catch(e) {}
-        client = null;
-      }
-      const opts = {
-        username: username,
-        password: password,
-        reconnectPeriod: 2000
-      };
-      client = mqtt.connect(serverUrl, opts);
-
-      client.on('connect', function () {
-        // إذا كانت هناك نشر معلق، أرسله
-        if (afterConnectPublish) {
-          client.publish(topic, afterConnectPublish, { qos: 0 }, function (err) {
-            // صامت: لم نعرض سجل على الصفحة لتبسيط الواجهة
-            pendingPublish = null;
-          });
-        } else if (pendingPublish) {
-          client.publish(topic, pendingPublish, { qos: 0 }, function () { pendingPublish = null; });
-        }
-      });
-      client.on('error', function () { });
-      client.on('close', function () { });
+  function connectMQTT(afterConnectPublish) {
+    if (client) {
+      try { client.end(); } catch (e) {}
+      client = null;
     }
+    const opts = {
+      username: username,
+      password: password,
+      reconnectPeriod: 2000
+    };
+    client = mqtt.connect(serverUrl, opts);
 
-    btnSweep.addEventListener('click', function () {
-      const payload = 'sweep';
-      if (!client || client.disconnected) {
-        // حدد ما نريد نشره بعد الاتصال
-        pendingPublish = payload;
-        connectMQTT(payload);
-        // بصريًا نعمل تأثير ضغط قصير
-        btnSweep.animate([{ transform:'scale(0.98)' }, { transform:'scale(1)' }], { duration:180 });
-        return;
+    client.on('connect', function () {
+      if (afterConnectPublish) {
+        client.publish(topic, afterConnectPublish, { qos: 0 }, function () {
+          pendingPublish = null;
+        });
+      } else if (pendingPublish) {
+        client.publish(topic, pendingPublish, { qos: 0 }, function () {
+          pendingPublish = null;
+        });
       }
-      client.publish(topic, payload, { qos: 0 }, function () { /* silent */ });
-      // تأثير بصري صغير عند الإرسال
-      btnSweep.animate([{ transform:'scale(0.96)' }, { transform:'scale(1)' }], { duration:140 });
     });
+  }
 
-    // محاولة اتصال مبكرة (هادئة)
-    connectMQTT();
-  </script>
+  // منع أكثر من ضغطة خلال 10 ثوانٍ
+  function disableButtonTemporarily() {
+    canPress = false;
+    btnSweep.style.opacity = '0.5';
+    btnSweep.style.pointerEvents = 'none';
+    setTimeout(() => {
+      btnSweep.style.opacity = '1';
+      btnSweep.style.pointerEvents = 'auto';
+      canPress = true;
+    }, 10000); // 10 ثوانٍ
+  }
+
+  btnSweep.addEventListener('click', function () {
+    if (!canPress) return; // تجاهل الضغطات السريعة
+    disableButtonTemporarily();
+
+    const payload = 'sweep';
+    if (!client || client.disconnected) {
+      pendingPublish = payload;
+      connectMQTT(payload);
+      btnSweep.animate([{ transform: 'scale(0.98)' }, { transform: 'scale(1)' }], { duration: 180 });
+      return;
+    }
+    client.publish(topic, payload, { qos: 0 }, function () { /* silent */ });
+    btnSweep.animate([{ transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 140 });
+  });
+
+  connectMQTT(); // اتصال مبكر
+</script>
 </body>
 </html>
+>
+
