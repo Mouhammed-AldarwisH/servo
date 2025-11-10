@@ -71,7 +71,7 @@
       const payload = 'sweep';
       if (!client || client.disconnected) connectMQTT();
 
-      client.publish(topic, payload, { qos: 1, retain: true }); // ← احتفظ بآخر أمر فقط
+      client.publish(topic, payload, { qos: 1, retain: false }); // ← احتفظ بآخر أمر فقط
       btnSweep.animate([{ transform: 'scale(0.95)' }, { transform: 'scale(1)' }], { duration: 160 });
     });
 
@@ -79,3 +79,4 @@
   </script>
 </body>
 </html>
+
