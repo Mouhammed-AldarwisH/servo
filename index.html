@@ -70,7 +70,7 @@
       if(!client||client.disconnected) connectMQTT();
 
       // إرسال أمر واحد مؤقت (بدون retain)
-      client.publish(topic,payload,{qos:1,retain:false});
+      client.publish(topic,payload,{qos:1,retain:true});
       btnSweep.animate([{transform:'scale(0.95)'},{transform:'scale(1)'}],{duration:160});
     });
 
@@ -78,4 +78,5 @@
   </script>
 </body>
 </html>
+
 
